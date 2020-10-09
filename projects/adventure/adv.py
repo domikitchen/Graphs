@@ -8,6 +8,39 @@ from ast import literal_eval
 # Load world
 world = World()
 
+class Stack():
+    def __init__(self):
+        self.stack = []
+
+    def push(self, value):
+        self.stack.append(value)
+
+    def pop(self):
+        if self.size() > 0:
+            return self.stack.pop()
+        
+        else:
+            return None
+
+    def size(self):
+        return len(self.stack)
+
+class Queue():
+    def __init__(self):
+        self.queue = []
+
+    def enqueue(self, value):
+        self.queue.append(value)
+
+    def dequeue(self):
+        if self.size() > 0:
+            return self.queue.pop(0)
+        
+        else:
+            return None
+    
+    def size(self):
+        return len(self.queue)
 
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
@@ -29,7 +62,47 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 traversal_path = []
 
+def go():
+    stack = Stack()
 
+    visited = set()
+
+    while len(visited) < len(world.rooms):
+        path = []
+
+        for exits in player.current_room.get_exits():
+            if player.current_room.get_room_in_direction(exits) not in visited:
+                path.append(exits)
+
+        if player.current_room not in visited:
+            visited.add(player.current_room)
+
+        if len(path) > 0:
+            random_path_movement = random.randint(0, len(path) - 1)
+
+            stack.push(path[random_path_movement])
+            player.travel(path[random_path_movement])
+
+            traversal_path.append(path[random_path_movement])
+
+        else:
+            last = stack.pop()
+            if last == "n":
+                player.travel("s")
+                traversal_path.append("s")
+            elif last == "s":
+                player.travel("n")
+                traversal_path.append("n")
+            elif last == "w":
+                player.travel("e")
+                traversal_path.append("e")
+            elif last == "e":
+                player.travel("w")
+                traversal_path.append("w")
+            else:
+                print("heck <_<")
+
+go()
 
 # TRAVERSAL TEST
 visited_rooms = set()
@@ -51,12 +124,13 @@ else:
 #######
 # UNCOMMENT TO WALK AROUND
 #######
-player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# player.current_room.print_room_description(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
+
